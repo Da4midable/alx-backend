@@ -47,3 +47,23 @@ class Server:
         if start_index >= len(data):
             return []
         return data[start_index:end_index]
+
+    def get_hyper(self, page: int = 1, page_size: int = 10):
+        """function returns a dictionary containing select key-value pairs"""
+        assert isinstance(page, int) and isinstance(page_size, int), \
+            "Page and page_size must be integers."
+        assert page > 0 and page_size > 0, \
+            "Page and page_size must be greater than 0."
+        all_items = len(self.dataset())
+        data = self.get_page(page, page_size)
+        next_page = page + 1 if len(data) == page_size else None
+        prev_page = page - 1 if page > 1 else None
+        total_pages = math.ceil((all_items) / page_size)
+        return {
+            'page_size': len(data),
+            'page': page,
+            'data': data,
+            'next_page': next_page,
+            'prev_page': prev_page,
+            'total_pages': total_pages
+        }
