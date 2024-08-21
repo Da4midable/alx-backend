@@ -3,6 +3,7 @@
 LIFOCache module that implements a LIFO caching system.
 """
 
+
 from collections import OrderedDict
 from base_caching import BaseCaching
 
@@ -16,6 +17,7 @@ class LIFOCache(BaseCaching):
     def __init__(self):
         """Initialises LIFOCache instance"""
         super().__init__()
+        self.cache_data = OrderedDict()
 
     def put(self, key, item):
         """
@@ -29,11 +31,15 @@ class LIFOCache(BaseCaching):
         Returns:
             None
         """
-        if key and item:
-            self.cache_data[key] = item
-        if len(self.cache_data) > self.MAX_ITEMS:
-            discarded_key, _ = self.cache_data.popitem()
-            print(f"DISCARD: {discarded_key}")
+        if key is None or item is None:
+            return
+
+        if key not in self.cache_data:
+            if len(self.cache_data) + 1 > self.MAX_ITEMS:
+                discarded_key, _ = self.cache_data.popitem()
+                print(f"DISCARD: {discarded_key}")
+        self.cache_data[key] = item
+        self.cache_data.move_to_end(key, last=True)
 
     def get(self, key):
         """
@@ -45,4 +51,6 @@ class LIFOCache(BaseCaching):
         Returns:
             Any: The item stored in the cache, or None if not found.
         """
-        return self.cache_data.get(key, None)
+        if key is None or key not in self.cache_data:
+            return None
+        return self.cache_data[key]
